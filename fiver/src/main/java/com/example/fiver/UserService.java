@@ -7,10 +7,9 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserRepository userRepository;
-    public String addUser(User user)
+    public User addUser(User user)
     {
-        userRepository.save(user);
-        return "User Added Successfully !";
+        return userRepository.save(user);
     }
     public List<User> getAllUser()
     {
@@ -20,7 +19,7 @@ public class UserService {
     {
         return userRepository.findById(id).orElse(null);
     }
-    public String updateUser(int id , User newData)
+    public User updateUser(int id , User newData)
     {
         User existingUser = userRepository.findById(id).orElse(null);
         if(existingUser != null )
@@ -30,9 +29,9 @@ public class UserService {
             existingUser.setPassword(newData.getPassword());
             existingUser.setRole(newData.getRole());
             userRepository.save(existingUser);
-            return "User Updated Successfully";
+            return existingUser;
         }
-        else{return "There no entry for this ID";}
+        else{return null;}
     }
     public String deleteUser(int id )
     {
@@ -43,7 +42,7 @@ public class UserService {
         }
         else{return "User Not Found";}
     }
-    public String updatePartialUser(User newData,int id )
+    public User updatePartialUser(int id ,User newData)
     {
         User existingUser = userRepository.findById(id).orElse(null);
         if(existingUser != null )
@@ -51,14 +50,14 @@ public class UserService {
             if(newData.getName() != null)
             {existingUser.setName(newData.getName());}
             if(newData.getEmail()!=null)
-            {existingUser.setName(newData.getName());}
+            {existingUser.setEmail(newData.getEmail());}
             if(newData.getPassword()!=null)
             {existingUser.setPassword(newData.getPassword());}
             if(newData.getRole()!=null)
-            {existingUser.setRole(newData.getName());}
+            {existingUser.setRole(newData.getRole());}
             userRepository.save(existingUser);
-            return "User's Detail Modified Successfully!";
+            return existingUser;
         }
-        else{return "User Not Found";}
+        else{return null;}
     }
 }

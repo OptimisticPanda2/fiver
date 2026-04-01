@@ -17,9 +17,9 @@ public class UserController {
         this.userService = userService;
     }
     @PostMapping("/users")
-    public String addUser(@RequestBody User user)
-    {
-        return userService.addUser(user);
+    public ResponseEntity<User>  addUser(@RequestBody User user)
+    {   User savedUser = userService.addUser(user);
+        return ResponseEntity.status(201).body(savedUser);
     }
     @GetMapping("/user")
     public ResponseEntity<List<User>>getAllUser() {
@@ -40,20 +40,32 @@ public class UserController {
         {return ResponseEntity.notFound().build();}
     }
     @PutMapping("/user/{id}")
-    public String updateUser(@PathVariable int id , @RequestBody User user)
-
-    {
-        return userService.updateUser(id,user);
+    public ResponseEntity<User> updateUser(@PathVariable int id , @RequestBody User user)
+    {   User newUser = userService.findUserById(id);
+        if(newUser!=null)
+        { User updatedUser = userService.updateUser(id,user);
+            return ResponseEntity.ok(updatedUser);
+        }
+        else{return ResponseEntity.notFound().build();}
     }
     @DeleteMapping("/user/{id}")
-    public String deleteUser(@PathVariable int id )
-    {
-        return userService.deleteUser(id);
+    public ResponseEntity<String> deleteUser(@PathVariable int id )
+    {   User user = userService.findUserById(id);
+        if(user!=null)
+        {
+         userService.deleteUser(id);
+         return ResponseEntity.noContent().build();
+        }
+        else{return ResponseEntity.notFound().build();}
     }
     @PatchMapping ("/user/{id}")
-    public String updatePartialUser(@RequestBody User user , @PathVariable int id )
-    {
-       return  userService.updatePartialUser(user,id);
+    public ResponseEntity<User> updatePartialUser(@PathVariable int id, @RequestBody User user ) {
+        User suser = userService.findUserById(id);
+        if (suser != null) {
+            User updatedUser = userService.updatePartialUser(id, user);
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
-
 }
