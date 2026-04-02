@@ -17,7 +17,10 @@ public class UserService {
     }
     public User findUserById(int id )
     {
-        return userRepository.findById(id).orElse(null);
+        User user = userRepository.findById(id).orElse(null);
+        if(user!=null)
+        { return user;}
+        else { throw new UserNotFoundException("User not found with id: " + id);}
     }
     public User updateUser(int id , User newData)
     {
@@ -31,7 +34,7 @@ public class UserService {
             userRepository.save(existingUser);
             return existingUser;
         }
-        else{return null;}
+        else{ throw new UserNotFoundException("User not found with id: " + id);}
     }
     public String deleteUser(int id )
     {
@@ -40,7 +43,7 @@ public class UserService {
             userRepository.deleteById(id);
             return "User Deleted Successfully";
         }
-        else{return "User Not Found";}
+        else{ throw new UserNotFoundException("User not found with id: " + id);}
     }
     public User updatePartialUser(int id ,User newData)
     {
@@ -58,6 +61,6 @@ public class UserService {
             userRepository.save(existingUser);
             return existingUser;
         }
-        else{return null;}
+        else{ throw new UserNotFoundException("User not found with id: " + id);}
     }
 }

@@ -42,30 +42,20 @@ public class UserController {
     @PutMapping("/user/{id}")
     public ResponseEntity<User> updateUser(@PathVariable int id , @RequestBody User user)
     {   User newUser = userService.findUserById(id);
-        if(newUser!=null)
-        { User updatedUser = userService.updateUser(id,user);
-            return ResponseEntity.ok(updatedUser);
-        }
-        else{return ResponseEntity.notFound().build();}
+         User newData = userService.updateUser(id,newUser);
+        return ResponseEntity.ok(newData);
     }
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable int id )
-    {   User user = userService.findUserById(id);
-        if(user!=null)
-        {
-         userService.deleteUser(id);
-         return ResponseEntity.noContent().build();
-        }
-        else{return ResponseEntity.notFound().build();}
+    public String deleteUser(@PathVariable int id )
+    {  userService.deleteUser(id);
+        return  "User Deleted Successfully";
     }
     @PatchMapping ("/user/{id}")
     public ResponseEntity<User> updatePartialUser(@PathVariable int id, @RequestBody User user ) {
-        User suser = userService.findUserById(id);
-        if (suser != null) {
-            User updatedUser = userService.updatePartialUser(id, user);
-            return ResponseEntity.ok(updatedUser);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+       User checkUser = userService.findUserById(id);
+       if(user!=null)
+       {User updatedUser = userService.updatePartialUser(id, user);
+        return ResponseEntity.ok(updatedUser);}
+       else{return ResponseEntity.notFound().build();}
     }
 }
