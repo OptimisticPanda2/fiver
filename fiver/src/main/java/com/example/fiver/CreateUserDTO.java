@@ -1,25 +1,17 @@
 package com.example.fiver;
-import jakarta.persistence.*;
-@Entity
-public class User {
-    @Id
-    @GeneratedValue
-    public int id;
-
-    public String name ;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String email;
-    public String password;
-    public String role;
-
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+public class CreateUserDTO {
+    @NotNull(message="Name must not be blank")
+    private String name;
+    @Email(message = "Please Enter a valid Email")
+    private String email;
+    @Size(max = 12 , message = "Password Can Contain Maximum 12 characted")
+    private String password;
+    @NotBlank(message = "Please Enter Your Role")
+    private String role;
     public String getName() {
         return name;
     }

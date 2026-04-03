@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import java.util.List;
+import java.util.ArrayList;
 @RestController
 public class UserController {
     private final UserService userService;
@@ -17,25 +19,27 @@ public class UserController {
         this.userService = userService;
     }
     @PostMapping("/users")
-    public ResponseEntity<User>  addUser(@RequestBody User user)
-    {   User savedUser = userService.addUser(user);
-        return ResponseEntity.status(201).body(savedUser);
+    public ResponseEntity<UserDTO>  addUser(@Valid @RequestBody CreateUserDTO cuDTO)
+    {   UserDTO saveDTO = userService.addUser(cuDTO);
+        return ResponseEntity.status(201).body(saveDTO);
     }
     @GetMapping("/user")
-    public ResponseEntity<List<User>>getAllUser() {
-        List<User> user = userService.getAllUser();
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<List<UserDTO>>getAllUser() {
+        List<User> allUser = userService.getAllUser();
+        List<UserDTO> userDTO = new ArrayList<>();
+        for(User user : allUser)
+        {
+            userDTO.add(userService.convertToDTO(user));
         }
+            return ResponseEntity.ok(userDTO);
     }
     @GetMapping("/user/{id}")
-    public ResponseEntity<User> findUserById(@PathVariable int id)
+    public ResponseEntity<UserDTO> findUserById(@PathVariable int id)
     {   User user = userService.findUserById(id);
-        if(user!=null)
+        UserDTO userDTO = userService.convertToDTO(user);
+        if(userDTO!=null)
         {
-            return ResponseEntity.ok(user);}
+            return ResponseEntity.ok(userDTO);}
         else
         {return ResponseEntity.notFound().build();}
     }

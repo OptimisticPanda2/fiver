@@ -7,9 +7,16 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserRepository userRepository;
-    public User addUser(User user)
+    public UserDTO addUser(CreateUserDTO cuDTO)
     {
-        return userRepository.save(user);
+            User user = new User();
+            user.setName(cuDTO.getName());
+            user.setEmail(cuDTO.getEmail());
+            user.setPassword(cuDTO.getPassword());
+            user.setRole(cuDTO.getRole());
+            userRepository.save(user);
+            UserDTO userDTO = convertToDTO(user);
+        return  userDTO;
     }
     public List<User> getAllUser()
     {
@@ -62,5 +69,13 @@ public class UserService {
             return existingUser;
         }
         else{ throw new UserNotFoundException("User not found with id: " + id);}
+    }
+    public UserDTO convertToDTO(User user)
+    {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        return dto;
     }
 }
