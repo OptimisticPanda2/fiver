@@ -22,6 +22,13 @@ public class UserController {
     public ResponseEntity<UserDTO>  addUser(@Valid @RequestBody CreateUserDTO cuDTO)
     {   UserDTO saveDTO = userService.addUser(cuDTO);
         return ResponseEntity.status(201).body(saveDTO);
+
+    }
+    @PostMapping("/service/{id}")
+    public ServiceEntity addService(@PathVariable int id , @RequestBody ServiceEntity service)
+    {
+        ServiceEntity saved = userService.createService(id,service);
+        return saved;
     }
     @GetMapping("/user")
     public ResponseEntity<List<UserDTO>>getAllUser() {

@@ -7,6 +7,8 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ServiceEntityRepository serviceRepository;
     public UserDTO addUser(CreateUserDTO cuDTO)
     {
             User user = new User();
@@ -77,5 +79,23 @@ public class UserService {
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         return dto;
+    }
+    public ServiceEntity createService(int id , ServiceEntity service)
+    {
+        User findUser = userRepository.findById(id).get();
+        if(findUser !=null) {
+            ServiceEntity nservice = new ServiceEntity();
+            nservice.setUser(findUser);
+            nservice.setTitle(service.getTitle());
+            nservice.setDescription(service.getDescription());
+            nservice.setPrice(service.getPrice());
+            ServiceEntity saved = serviceRepository.save(nservice);
+            System.out.println("SERVICE METHOD HIT");
+            return nservice;
+
+        }
+        else {
+            throw new UserNotFoundException("User Not Found ! ");
+        }
     }
 }

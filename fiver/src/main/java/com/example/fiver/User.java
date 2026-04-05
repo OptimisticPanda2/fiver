@@ -1,12 +1,17 @@
 package com.example.fiver;
 import jakarta.persistence.*;
+import java.util.List;
 @Entity
 public class User {
     @Id
     @GeneratedValue
     public int id;
-
     public String name ;
+    public String email;
+    public String password;
+    public String role;
+    @OneToMany(mappedBy = "user")
+    List<ServiceEntity> services;
 
     public int getId() {
         return id;
@@ -16,9 +21,7 @@ public class User {
         this.id = id;
     }
 
-    public String email;
-    public String password;
-    public String role;
+
 
     public String getName() {
         return name;
