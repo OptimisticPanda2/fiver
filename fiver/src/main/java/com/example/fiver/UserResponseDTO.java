@@ -1,5 +1,7 @@
 package com.example.fiver;
 
+import java.util.List;
+
 public class UserResponseDTO {
     public int id;
     public String name;
@@ -64,4 +66,5 @@ public class UserResponseDTO {
     public void setEmail(String email) {
         this.email = email;
     }
+
 }

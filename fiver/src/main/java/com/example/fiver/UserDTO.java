@@ -1,11 +1,12 @@
 package com.example.fiver;
+import java.util.List;
 
 
 public class UserDTO {
     int id ;
     String name;
     String email;
-
+    List<ServiceEntity> services;
     public String getEmail() {
         return email;
     }
@@ -28,5 +29,13 @@ public class UserDTO {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public List<ServiceEntity> getServices() {
+        return services;
+    }
+
+    public void setServices(List<ServiceEntity> services) {
+        this.services = services;
     }
 }

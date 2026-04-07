@@ -54,4 +54,12 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+
+    public List<ServiceEntity> getServices() {
+        return services;
+    }
+
+    public void setServices(List<ServiceEntity> services) {
+        this.services = services;
+    }
 }

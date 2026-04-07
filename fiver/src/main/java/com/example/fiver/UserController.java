@@ -7,11 +7,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+@CrossOrigin
 @RestController
+
 public class UserController {
     private final UserService userService;
     public UserController(UserService userService)
@@ -19,9 +23,8 @@ public class UserController {
         this.userService = userService;
     }
     @PostMapping("/users")
-    public ResponseEntity<UserDTO>  addUser(@Valid @RequestBody CreateUserDTO cuDTO)
-    {   UserDTO saveDTO = userService.addUser(cuDTO);
-        return ResponseEntity.status(201).body(saveDTO);
+    public ApiResponse addUser(@Valid @RequestBody CreateUserDTO cuDTO)
+    {   return userService.addUser(cuDTO);
 
     }
     @PostMapping("/service/{id}")
@@ -41,14 +44,10 @@ public class UserController {
             return ResponseEntity.ok(userDTO);
     }
     @GetMapping("/user/{id}")
-    public ResponseEntity<UserDTO> findUserById(@PathVariable int id)
-    {   User user = userService.findUserById(id);
-        UserDTO userDTO = userService.convertToDTO(user);
-        if(userDTO!=null)
-        {
-            return ResponseEntity.ok(userDTO);}
-        else
-        {return ResponseEntity.notFound().build();}
+    public ResponseEntity<UserResponseDTO> findUserById(@PathVariable int id)
+    {
+        UserResponseDTO userDTO = userService.getUserWithService(id);
+        return ResponseEntity.ok(userDTO);
     }
     @PutMapping("/user/{id}")
     public ResponseEntity<User> updateUser(@PathVariable int id , @RequestBody User user)

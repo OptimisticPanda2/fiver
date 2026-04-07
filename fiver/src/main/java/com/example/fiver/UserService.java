@@ -3,13 +3,15 @@ package com.example.fiver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 @Service
 public class UserService {
     @Autowired
     UserRepository userRepository;
     @Autowired
     ServiceEntityRepository serviceRepository;
-    public UserDTO addUser(CreateUserDTO cuDTO)
+    public ApiResponse addUser(CreateUserDTO cuDTO)
     {
             User user = new User();
             user.setName(cuDTO.getName());
@@ -18,7 +20,7 @@ public class UserService {
             user.setRole(cuDTO.getRole());
             userRepository.save(user);
             UserDTO userDTO = convertToDTO(user);
-        return  userDTO;
+            return  new ApiResponse("Data Saved Successfully",userDTO);
     }
     public List<User> getAllUser()
     {
@@ -78,6 +80,7 @@ public class UserService {
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
+        dto.setServices(user.getServices());
         return dto;
     }
     public ServiceEntity createService(int id , ServiceEntity service)
@@ -97,5 +100,24 @@ public class UserService {
         else {
             throw new UserNotFoundException("User Not Found ! ");
         }
+    }
+    public UserResponseDTO getUserWithService(int id)
+    {
+        User user = userRepository.findById(id).orElse(null);
+        if(user != null) {
+            UserResponseDTO dto = new UserResponseDTO();
+            List<ServiceEntity> services = user.getServices();
+            for (ServiceEntity s : services) {
+                dto.setDescription(s.getDescription());
+                dto.setTitle(s.getTitle());
+                dto.setPrice(s.getPrice());
+            }
+            dto.setId(id);
+            dto.setName(user.getName());
+            dto.setEmail(user.getEmail());
+            dto.setRole(user.getRole());
+            return dto;
+        }
+        else{ throw new UserNotFoundException("User not found with id: " + id);}
     }
 }
