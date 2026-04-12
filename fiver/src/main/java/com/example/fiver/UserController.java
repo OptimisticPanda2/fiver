@@ -8,7 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.ArrayList;
@@ -34,20 +38,20 @@ public class UserController {
         return saved;
     }
     @GetMapping("/user")
-    public ResponseEntity<List<UserDTO>>getAllUser() {
-        List<User> allUser = userService.getAllUser();
-        List<UserDTO> userDTO = new ArrayList<>();
-        for(User user : allUser)
-        {
-            userDTO.add(userService.convertToDTO(user));
-        }
-            return ResponseEntity.ok(userDTO);
+    public Page<UserResponseDTO> getAllUser( Pageable pageable) {
+        Page<UserResponseDTO> allUser =userService.getAllUser(pageable);
+        return allUser;
     }
     @GetMapping("/user/{id}")
     public ResponseEntity<UserResponseDTO> findUserById(@PathVariable int id)
     {
         UserResponseDTO userDTO = userService.getUserWithService(id);
         return ResponseEntity.ok(userDTO);
+    }
+    @GetMapping("/services")
+    public PaginatedResponse getServices(Pageable pageable)
+    {
+        return userService.getService(pageable);
     }
     @PutMapping("/user/{id}")
     public ResponseEntity<User> updateUser(@PathVariable int id , @RequestBody User user)

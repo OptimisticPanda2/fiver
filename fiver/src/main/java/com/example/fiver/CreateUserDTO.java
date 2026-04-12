@@ -12,6 +12,7 @@ public class CreateUserDTO {
     private String password;
     @NotBlank(message = "Please Enter Your Role")
     private String role;
+
     public String getName() {
         return name;
     }
