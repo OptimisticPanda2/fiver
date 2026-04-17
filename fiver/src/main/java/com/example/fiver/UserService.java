@@ -8,18 +8,24 @@ import org.springframework.data.domain.PageImpl;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Service
 public class UserService {
     @Autowired
     UserRepository userRepository;
     @Autowired
     ServiceEntityRepository serviceRepository;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
     public ApiResponse addUser(CreateUserDTO cuDTO)
     {
             User user = new User();
             user.setName(cuDTO.getName());
             user.setEmail(cuDTO.getEmail());
-            user.setPassword(cuDTO.getPassword());
+            user.setPassword(passwordEncoder.encode(cuDTO.getPassword()));
             user.setRole(cuDTO.getRole());
             userRepository.save(user);
             UserDTO userDTO = convertToDTO(user);
@@ -92,7 +98,7 @@ public class UserService {
         dto.setServices(user.getServices());
         return dto;
     }
-    public ServiceEntity createService(int id , ServiceEntity service)
+    public ServiceEntity createService(int id , ServiceEntity service,MultipartFile file)throws IOException
     {
         User findUser = userRepository.findById(id).get();
         if(findUser !=null) {
@@ -101,10 +107,13 @@ public class UserService {
             nservice.setTitle(service.getTitle());
             nservice.setDescription(service.getDescription());
             nservice.setPrice(service.getPrice());
+            String folderPath = "E:/uploads/";
+            String filePath = folderPath + file.getOriginalFilename();
+            file.transferTo(new File(filePath));
+            nservice.setImageUrl(filePath);
             ServiceEntity saved = serviceRepository.save(nservice);
             System.out.println("SERVICE METHOD HIT");
             return nservice;
-
         }
         else {
             throw new UserNotFoundException("User Not Found ! ");
@@ -150,29 +159,6 @@ public class UserService {
             dto.setRole(us.getRole());
             return dto;
     }
-    public PaginatedResponse<ServiceDTO> getServices(Pageable pageable) {
-
-        Page<ServiceEntity> pageData = serviceRepository.findAll(pageable);
-
-        List<ServiceDTO> dtoList = new ArrayList<>();
-
-        for(ServiceEntity s : pageData.getContent()) {
-            ServiceDTO dto = new ServiceDTO();
-            dto.setTitle(s.getTitle());
-            dto.setDescription(s.getDescription());
-            dto.setPrice(s.getPrice());
-            dtoList.add(dto);
-        }
-
-        PaginatedResponse<ServiceDTO> response = new PaginatedResponse<>();
-        response.setData(dtoList);
-        response.setPage(pageData.getNumber());
-        response.setSize(pageData.getSize());
-        response.setTotalElements(pageData.getTotalElements());
-        response.setTotalPages(pageData.getTotalPages());
-
-        return response;
-    }
     public PaginatedResponse<UserResponseDTO> getService(Pageable pageable) {
 
         Page<ServiceEntity> pageData = serviceRepository.findAll(pageable);
@@ -196,4 +182,18 @@ public class UserService {
 
         return response;
     }
+ public String login(LoginRequest request)
+ {
+     User user = userRepository.findByEmail(request.getEmail());
+     if(user== null)
+     {throw new UserNotFoundException("User Not Found");}
+     boolean match = passwordEncoder.matches(
+             request.getPassword(),
+             user.getPassword()
+     );
+     if(!match)
+     {throw new RuntimeException("Invalid Password");}
+     JwtUtil jwtUtil = new JwtUtil();
+     return jwtUtil.generateToken(user.getEmail());
+ }
 }

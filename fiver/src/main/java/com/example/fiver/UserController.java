@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import java.io.File;
+import java.io.IOException;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,15 +33,29 @@ public class UserController {
     {   return userService.addUser(cuDTO);
 
     }
-    @PostMapping("/service/{id}")
-    public ServiceEntity addService(@PathVariable int id , @RequestBody ServiceEntity service)
+    @PostMapping(value = "/service/{id}", consumes = "multipart/form-data")
+    public ServiceEntity addService(
+        @PathVariable int id,
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("title") String title,
+        @RequestParam("description") String description,
+        @RequestParam("price") int price
+        ) throws IOException {
+        ServiceEntity service = new ServiceEntity();
+        service.setTitle(title);
+        service.setDescription(description);
+        service.setPrice(price);
+
+        return userService.createService(id, service, file);
+    }
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request)
     {
-        ServiceEntity saved = userService.createService(id,service);
-        return saved;
+        return userService.login(request);
     }
     @GetMapping("/user")
     public Page<UserResponseDTO> getAllUser( Pageable pageable) {
-        Page<UserResponseDTO> allUser =userService.getAllUser(pageable);
+        Page<UserResponseDTO> allUser = userService.getAllUser(pageable);
         return allUser;
     }
     @GetMapping("/user/{id}")
@@ -71,5 +87,18 @@ public class UserController {
        {User updatedUser = userService.updatePartialUser(id, user);
         return ResponseEntity.ok(updatedUser);}
        else{return ResponseEntity.notFound().build();}
+    }
+    @PostMapping("/upload")
+    public String uploadFile(@RequestParam("file") MultipartFile file)throws IOException
+    {
+        String folderPath = "E:\\uploads\\";
+        File folder = new File(folderPath);
+        if(!folder.exists())
+        {
+            folder.mkdir();
+        }
+        String filePath = folderPath + file.getOriginalFilename();
+        file.transferTo(new File(filePath));
+        return "Saved at : " +filePath;
     }
 }

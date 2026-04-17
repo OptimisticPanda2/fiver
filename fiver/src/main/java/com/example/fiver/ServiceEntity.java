@@ -17,6 +17,7 @@ public class ServiceEntity {
     String title;
     String description;
     int price;
+    String imageUrl;
 
     public ServiceEntity() {}
     public int getPrice() {
@@ -61,6 +62,11 @@ public class ServiceEntity {
     }
 
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
 
-
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
