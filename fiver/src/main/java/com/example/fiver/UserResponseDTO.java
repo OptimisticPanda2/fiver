@@ -1,4 +1,5 @@
 package com.example.fiver;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -7,6 +8,8 @@ public class UserResponseDTO {
     public String name;
     public String title;
     public String role;
+    @JsonIgnore
+    private String password;
     public String description;
     public int price;
     public String email;
@@ -67,4 +70,11 @@ public class UserResponseDTO {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

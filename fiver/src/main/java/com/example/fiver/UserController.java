@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.io.File;
 import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,12 +31,11 @@ public class UserController {
     {
         this.userService = userService;
     }
-    @PostMapping("/users")
-    public ApiResponse addUser(@Valid @RequestBody CreateUserDTO cuDTO)
-    {   return userService.addUser(cuDTO);
-
+    @PostMapping("/user")
+    public String register( @Valid @RequestBody CreateUserDTO cuDTO)
+    {   return userService.register(cuDTO);
     }
-    @PostMapping(value = "/service/{id}", consumes = "multipart/form-data")
+  /*  @PostMapping(value = "/service/{id}", consumes = "multipart/form-data")
     public ServiceEntity addService(
         @PathVariable int id,
         @RequestParam("file") MultipartFile file,
@@ -47,8 +49,8 @@ public class UserController {
         service.setPrice(price);
 
         return userService.createService(id, service, file);
-    }
-    @PostMapping("/login")
+    }*/
+    @PostMapping("/auth/login")
     public String login(@RequestBody LoginRequest request)
     {
         return userService.login(request);
@@ -58,29 +60,27 @@ public class UserController {
         Page<UserResponseDTO> allUser = userService.getAllUser(pageable);
         return allUser;
     }
-    @GetMapping("/user/{id}")
-    public ResponseEntity<UserResponseDTO> findUserById(@PathVariable int id)
-    {
-        UserResponseDTO userDTO = userService.getUserWithService(id);
-        return ResponseEntity.ok(userDTO);
+    @PostMapping("/services")
+    public String createService(@Valid @RequestBody ServiceDTO dto) {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+       return userService.createService(dto, email);
     }
-    @GetMapping("/services")
-    public PaginatedResponse getServices(Pageable pageable)
+    @GetMapping("/user/{title}")
+    public List<UserResponseDTO> findUserByTitle(@PathVariable String title)
     {
-        return userService.getService(pageable);
-    }
-    @PutMapping("/user/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable int id , @RequestBody User user)
-    {   User newUser = userService.findUserById(id);
-         User newData = userService.updateUser(id,newUser);
-        return ResponseEntity.ok(newData);
+        return userService.findUserByTitle(title);
     }
     @DeleteMapping("/user/{id}")
     public String deleteUser(@PathVariable int id )
     {  userService.deleteUser(id);
         return  "User Deleted Successfully";
     }
-    @PatchMapping ("/user/{id}")
+    @PatchMapping ("/user")
     public ResponseEntity<User> updatePartialUser(@PathVariable int id, @RequestBody User user ) {
        User checkUser = userService.findUserById(id);
        if(user!=null)
@@ -88,6 +88,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);}
        else{return ResponseEntity.notFound().build();}
     }
+
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file)throws IOException
     {
