@@ -27,23 +27,25 @@ public class UserController
     {
         this.userService = userService;
     }
-
+    // request to get all user
     @GetMapping("/user")
     public Page<UserResponseDTO> getAllUser( Pageable pageable) {
         Page<UserResponseDTO> allUser = userService.getAllUser(pageable);
         return allUser;
     }
-
+    // request to find user by Id
     @GetMapping("/user/{id}")
     public User getUserById(@RequestParam int id)
     {
         return userService.findUserById(id);
     }
+   // request to delete user by ID
     @DeleteMapping("/user/{id}")
     public String deleteUser(@PathVariable int id )
     {  userService.deleteUser(id);
         return  "User Deleted Successfully";
     }
+    //request to update user details
     @PatchMapping ("/user")
     public ResponseEntity<User> updatePartialUser(@PathVariable int id, @RequestBody User user ) {
        User checkUser = userService.findUserById(id);
@@ -52,7 +54,7 @@ public class UserController
         return ResponseEntity.ok(updatedUser);}
        else{return ResponseEntity.notFound().build();}
     }
-
+    // request to upload image of user
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file)throws IOException
     {
@@ -65,5 +67,19 @@ public class UserController
         String filePath = folderPath + file.getOriginalFilename();
         file.transferTo(new File(filePath));
         return "Saved at : " +filePath;
+    }
+    // request to check verification of Email
+    @GetMapping("/verify")
+    public String verification(@RequestParam String token)
+    {
+        return userService.verifyEmail(token);
+    }
+    // request to change password
+    @PostMapping("/forgot-password")
+    public String forgotPassword(
+            @RequestParam String email
+    )
+    {
+        return userService.forgotPassword(email);
     }
 }

@@ -8,7 +8,7 @@ public class CreateUserDTO {
     private String name;
     @Email(message = "Please Enter a valid Email")
     private String email;
-    @Size(min = 6 , max = 12 , message = "Password Can Contain Maximum 12 characted")
+    @Size(min = 6 , max = 15 , message = "Password Can Contain Maximum 15 characters")
     private String password;
     @NotBlank(message = "Please Enter Your Role")
     private String role;

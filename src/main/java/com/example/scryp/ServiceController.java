@@ -58,5 +58,12 @@ public class ServiceController {
     {
         return userService.updateService(id,dto);
     }
+   //request to add rating to the service provided
+    @PostMapping("/services/{id}/rating")
+    public String addRating(@PathVariable int id , @RequestParam int stars)
+    {
+        return userService.addRating(id,stars);
+    }
+
 
 }

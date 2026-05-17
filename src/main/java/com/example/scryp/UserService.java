@@ -7,10 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageImpl;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Service
 public class UserService {
+
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -21,7 +23,8 @@ public class UserService {
     private JwtUtil jwtUtil;
     @Autowired
     private ProjectRequestRepository projectRequestRepository;
-
+    @Autowired
+    private MailService mailService;
     // create User Function
     public String register(CreateUserDTO request) {
         User user = new User();
@@ -30,10 +33,17 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
         User savedUser = userRepository.save(user);
-        // check Role
+        String token = UUID.randomUUID().toString();
+        user.setVerificationToken(token);
+        mailService.sendEmail(
+                user.getEmail(),
+                "Verify Your Email",
+                "Click to verify: "
+                        + "http://localhost:8080/verify?token="
+                        + token
+        );
 
         return "User Created Successfully";
-
     }
 
     public Page<UserResponseDTO> getAllUser(Pageable pageable) {
@@ -283,7 +293,12 @@ public String createService(ServiceDTO dto, String email) {
             dto.setPortfolioLink(service.getPortfolioLink());
 
             dto.setFreelancerName(service.getUser().getName());
-
+            dto.setRating(
+                    service.getRating()
+            );
+            dto.setTotalRatings(
+                    service.getTotalRatings()
+            );
             response.add(dto);
         }
         return new PageImpl<>(
@@ -351,4 +366,56 @@ public String createService(ServiceDTO dto, String email) {
         serviceRepository.save(service);
         return "Service Updated Successfully";
     }
+   //method to add ratings
+    public String addRating(int id , int stars)
+    {
+        ServiceEntity service = serviceRepository.findById(id);
+        if(service == null)
+        {
+            throw new RuntimeException("Service Not Found");
+        }
+        double currentRating = service.getRating();
+        int totalRatings = service.getTotalRatings();
+
+        double newRating = ((currentRating*totalRatings)+stars)/(totalRatings+1);
+        service.setRating(newRating);
+        service.setTotalRatings(totalRatings+1);
+        serviceRepository.save(service);
+
+        return "Rating Added Successfully";
+    }
+    //method to verify email
+    public String verifyEmail(String token)
+    {
+        User user = userRepository.findByVerificationToken(token);
+
+        if(user==null)
+        {
+            throw new RuntimeException("Invalid Token");
+        }
+        user.setVerified(true);
+        user.setVerificationToken(null);
+
+        return "Email Verified Successfully";
+    }
+    // method to change password by email
+    public String forgotPassword(String email)
+    {
+        User user = userRepository.findByEmail(email);
+        if(user == null)
+        {
+            throw new RuntimeException("User Not Found");
+        }
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        userRepository.save(user);
+        mailService.sendEmail(
+                user.getEmail(),
+                "Reset Password",
+                "http://localhost:8080/reset-password?token="+token
+        );
+        return "Reset Password mail sent";
+    }
 }
+
+

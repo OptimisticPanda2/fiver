@@ -14,6 +14,9 @@ public class ServiceResponseDTO {
 
     private String freelancerName;
 
+    private double rating;
+    private int totalRatings;
+
     public String getTitle() {
         return title;
     }
@@ -84,5 +87,21 @@ public class ServiceResponseDTO {
 
     public void setFreelancerName(String freelancerName) {
         this.freelancerName = freelancerName;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public int getTotalRatings() {
+        return totalRatings;
+    }
+
+    public void setTotalRatings(int totalRatings) {
+        this.totalRatings = totalRatings;
     }
 }

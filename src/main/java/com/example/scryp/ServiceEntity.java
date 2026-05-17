@@ -24,6 +24,8 @@ public class ServiceEntity {
     private String githubLink;
     private String demoVideoLink;
     private String portfolioLink;
+    private double rating;
+    private int totalRatings;
 
     public User getUser() {
         return user;
@@ -111,5 +113,21 @@ public class ServiceEntity {
 
     public void setPortfolioLink(String portfolioLink) {
         this.portfolioLink = portfolioLink;
+    }
+
+    public int getTotalRatings() {
+        return totalRatings;
+    }
+
+    public void setTotalRatings(int totalRatings) {
+        this.totalRatings = totalRatings;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }
