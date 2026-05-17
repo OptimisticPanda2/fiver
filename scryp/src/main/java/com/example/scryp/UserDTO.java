@@ -1,0 +1,41 @@
+package com.example.scryp;
+import java.util.List;
+
+
+public class UserDTO {
+    int id ;
+    String name;
+    String email;
+    List<ServiceEntity> services;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public List<ServiceEntity> getServices() {
+        return services;
+    }
+
+    public void setServices(List<ServiceEntity> services) {
+        this.services = services;
+    }
+}
